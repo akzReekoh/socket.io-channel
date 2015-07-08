@@ -11,16 +11,10 @@ endpoint.on('ready', function (options) {
 
 	ws.on('connection', function(socket) {
 
-		console.log('connection');
-              
 		socket.on('ready', function () {
                         
 			process.send({type: 'listening'});
 			console.log('listening')
-		});
-              
-		socket.on('connect', function() {
-
 		});
               
 		socket.on('message', function (m) {
@@ -31,8 +25,7 @@ endpoint.on('ready', function (options) {
 				});
 			}
 		});
-              
-              
+
 		socket.on('data', function (m) {
 			if (m.type === 'data' && m.data) {
 				process.send({
@@ -40,7 +33,6 @@ endpoint.on('ready', function (options) {
 					data: m.data
 				});
 			}
-                        
 		});
               
 	});
