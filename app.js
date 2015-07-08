@@ -5,18 +5,10 @@
  */
 var endpoint = require('./endpoint')();
 
-console.log('starting');
-
 endpoint.on('ready', function (options) {
-	var _             = require('lodash'),
-		//host          = require('ip').address(),
-		//StringDecoder = require('string_decoder').StringDecoder,
-		//decoder       = new StringDecoder('utf8'),
-		//serverAddress = host + '' + options.port,
-        ws = require('socket.io')(options.port);
 
-	console.log('listening for ready');
-        
+    var ws = require('socket.io')(options.port);
+
 	ws.on('connection', function(socket) {
 
 		console.log('connection');
