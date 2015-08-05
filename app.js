@@ -1,72 +1,36 @@
 'use strict';
 
-/*
- * Initialize the endpoint.
- */
-var endpoint = require('./endpoint')();
+var platform = require('./platform')();
 
-endpoint.on('ready', function (options) {
+platform.on('ready', function (options) {
+	var app = require('http').createServer(function (req, res) {
+		res.end('Channel Online');
+	});
+	var io = require('socket.io')(app);
 
-    var ws = require('socket.io')(options.port);
-
-	ws.on('connection', function(socket) {
-
-		socket.on('ready', function () {
-                        
-			process.send({type: 'listening'});
-			console.log('listening')
-		});
-              
-		socket.on('message', function (m) {
-			if (m.type === 'message' && m.data.message) {
-				process.send({
-					type: 'message',
-					data: m.data
-				});
-			}
+	io.on('connection', function (socket) {
+		/*
+		 * Listen to inbound messages coming from other platforms,
+		 * services, or apps. Receive the messages and send them
+		 * over to the platform. These messages may contain data/commands
+		 * that are to be sent to the connected devices on the network/topology.
+		 */
+		socket.on('message', function (message) {
+			platform.sendMessage(message);
 		});
 
-		socket.on('data', function (m) {
-			if (m.type === 'data' && m.data) {
-				process.send({
-					type: 'data',
-					data: m.data
-				});
-			}
+		/*
+		 * Listen to the data that is coming from the devices.
+		 * Send these data outbound to the other platforms, services,
+		 * or apps that are connected to this channel.
+		 */
+		platform.on('data', function (data) {
+			socket.emit('data', data);
 		});
-              
 	});
 
-	endpoint.on('message', function (message) {
-		console.log(message);
+	app.listen(options.port, require('ip').address(), function(error) {
+		if (error)
+			platform.handleException(error);
 	});
-
-
-
-	//endpoint.on('message', function (message) {
-	//	if (message.server === serverAddress && _.contains(_.keys(server.getClients()), message.client)) {
-	//		server.send(message.client, message.message, false, function (error) {
-	//			if (error) {
-	//				console.log('Message Sending Error', error);
-	//				endpoint.sendError(error);
-	//			}
-	//			else
-	//				endpoint.sendLog('Message Sent', message.message);
-	//		});
-	//	}
-	//	else if (message.client === '*') {
-	//		server.getClients().forEach(function (client) {
-	//			server.send(client, message.message, false, function (error) {
-	//				if (error) {
-	//					console.log('Message Sending Error', error);
-	//					endpoint.sendError(error);
-	//				}
-	//				else
-	//					endpoint.sendLog('Message Sent', message.message);
-	//			});
-	//		});
-	//	}
-	//});
-
-
 });
