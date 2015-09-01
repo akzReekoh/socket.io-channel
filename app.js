@@ -2,7 +2,7 @@
 
 var platform = require('./platform')();
 
-platform.on('ready', function (options) {
+platform.once('ready', function (options) {
 	var app = require('http').createServer(function (req, res) {
 		res.end('Channel Online');
 	});
