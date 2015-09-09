@@ -6,6 +6,7 @@ platform.once('ready', function (options) {
 	var app = require('http').createServer(function (req, res) {
 		res.end('Channel Online');
 	});
+
 	var io = require('socket.io')(app);
 
 	io.on('connection', function (socket) {
@@ -15,8 +16,18 @@ platform.once('ready', function (options) {
 		 * over to the platform. These messages may contain data/commands
 		 * that are to be sent to the connected devices on the network/topology.
 		 */
-		socket.on('message', function (message) {
-			platform.sendMessage(message);
+		socket.on('message', function (data) {
+			platform.sendMessageToDevice(data.device, data.message);
+		});
+
+		/*
+		 * Listen to inbound messages coming from other platforms,
+		 * services, or apps. Receive the messages and send them
+		 * over to the platform. These messages may contain data/commands
+		 * that are to be sent to the connected devices on the network/topology.
+		 */
+		socket.on('groupmessage', function (data) {
+			platform.sendMessageToGroup(data.group, data.message);
 		});
 
 		/*

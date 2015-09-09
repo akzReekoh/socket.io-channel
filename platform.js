@@ -3,6 +3,10 @@
 var inherits     = require('util').inherits,
 	EventEmitter = require('events').EventEmitter;
 
+var isString = function (val) {
+	return typeof val === 'string' || ((!!val && typeof val === 'object') && Object.prototype.toString.call(val) === '[object String]');
+};
+
 function Platform() {
 	if (!(this instanceof Platform)) return new Platform();
 
@@ -31,15 +35,40 @@ Platform.init = function () {
 	});
 };
 
-Platform.prototype.sendMessage = function (message, callback) {
+Platform.prototype.sendMessageToDevice = function (device, message, callback) {
 	setImmediate(function () {
-		callback = callback || function () {};
+		callback = callback || function () {
+			};
 
-		if (!message) return callback(new Error('Message is required.'));
+		if (!device || !isString(device)) return callback(new Error('A valid device id is required.'));
+		if (!message || !isString(message)) return callback(new Error('A valid message is required.'));
 
 		process.send({
 			type: 'message',
-			data: message
+			data: {
+				device: device,
+				message: message
+			}
+		});
+
+		callback();
+	});
+};
+
+Platform.prototype.sendMessageToGroup = function (group, message, callback) {
+	setImmediate(function () {
+		callback = callback || function () {
+			};
+
+		if (!group || !isString(group)) return callback(new Error('A valid group id is required.'));
+		if (!message || !isString(message)) return callback(new Error('A valid message is required.'));
+
+		process.send({
+			type: 'message',
+			data: {
+				group: group,
+				message: message
+			}
 		});
 
 		callback();
@@ -48,9 +77,10 @@ Platform.prototype.sendMessage = function (message, callback) {
 
 Platform.prototype.log = function (title, description, callback) {
 	setImmediate(function () {
-		callback = callback || function () {};
+		callback = callback || function () {
+			};
 
-		if (!title) return callback(new Error('Log title is required.'));
+		if (!title || !isString(title)) return callback(new Error('A valid log title is required.'));
 
 		process.send({
 			type: 'log',
@@ -66,7 +96,8 @@ Platform.prototype.log = function (title, description, callback) {
 
 Platform.prototype.handleException = function (error, callback) {
 	setImmediate(function () {
-		callback = callback || function () {};
+		callback = callback || function () {
+			};
 
 		if (!error) return callback(new Error('Error is required.'));
 
