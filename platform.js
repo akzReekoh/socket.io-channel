@@ -13,7 +13,6 @@ function Platform() {
 	var self = this;
 
 	process.on('uncaughtException', function (error) {
-		console.error(error);
 		self.handleException(error);
 		process.exit(1);
 	});
@@ -36,10 +35,10 @@ Platform.init = function () {
 };
 
 Platform.prototype.sendMessageToDevice = function (device, message, callback) {
-	setImmediate(function () {
-		callback = callback || function () {
-			};
+	callback = callback || function () {
+		};
 
+	setImmediate(function () {
 		if (!device || !isString(device)) return callback(new Error('A valid device id is required.'));
 		if (!message || !isString(message)) return callback(new Error('A valid message is required.'));
 
@@ -56,10 +55,10 @@ Platform.prototype.sendMessageToDevice = function (device, message, callback) {
 };
 
 Platform.prototype.sendMessageToGroup = function (group, message, callback) {
-	setImmediate(function () {
-		callback = callback || function () {
-			};
+	callback = callback || function () {
+		};
 
+	setImmediate(function () {
 		if (!group || !isString(group)) return callback(new Error('A valid group id is required.'));
 		if (!message || !isString(message)) return callback(new Error('A valid message is required.'));
 
@@ -76,10 +75,10 @@ Platform.prototype.sendMessageToGroup = function (group, message, callback) {
 };
 
 Platform.prototype.log = function (title, description, callback) {
-	setImmediate(function () {
-		callback = callback || function () {
-			};
+	callback = callback || function () {
+		};
 
+	setImmediate(function () {
 		if (!title || !isString(title)) return callback(new Error('A valid log title is required.'));
 
 		process.send({
@@ -95,13 +94,11 @@ Platform.prototype.log = function (title, description, callback) {
 };
 
 Platform.prototype.handleException = function (error, callback) {
+	callback = callback || function () {
+		};
+
 	setImmediate(function () {
-		callback = callback || function () {
-			};
-
 		if (!error) return callback(new Error('Error is required.'));
-
-		console.error(error);
 
 		process.send({
 			type: 'error',
