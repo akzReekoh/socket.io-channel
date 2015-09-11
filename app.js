@@ -40,8 +40,12 @@ platform.once('ready', function (options) {
 		});
 	});
 
-	app.listen(options.port, require('ip').address(), function(error) {
-		if (error)
+	app.listen(options.port, require('ip').address(), function (error) {
+		if (error) {
 			platform.handleException(error);
+			process.exit(1);
+		}
+		else
+			platform.notifyReady();
 	});
 });
