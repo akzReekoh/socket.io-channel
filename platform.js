@@ -34,6 +34,19 @@ Platform.init = function () {
 	});
 };
 
+Platform.prototype.notifyReady = function (callback) {
+	callback = callback || function () {
+		};
+
+	setImmediate(function () {
+		process.send({
+			type: 'ready'
+		});
+
+		callback();
+	});
+};
+
 Platform.prototype.sendMessageToDevice = function (device, message, callback) {
 	callback = callback || function () {
 		};
