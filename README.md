@@ -6,3 +6,9 @@
 ![Built With](https://img.shields.io/badge/built%20with-gulp-red.svg)
 
 Vanilla Websocket Channel plugin for the Reekoh IoT Platform. Uses socket.io. 
+
+##Testing
+
+```
+npm install && gulp test
+```
