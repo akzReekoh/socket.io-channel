@@ -22,9 +22,8 @@ describe('WS Channel', function () {
 			this.timeout(5000);
 
 			channel.on('message', function (message) {
-				if (message.type === 'ready') {
+				if (message.type === 'ready')
 					done();
-				}
 			});
 
 			channel.send({
