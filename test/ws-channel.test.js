@@ -9,6 +9,10 @@ var cp     = require('child_process'),
 describe('WS Channel', function () {
 	this.slow(5000);
 
+	after('terminate child process', function () {
+		channel.kill('SIGKILL');
+	});
+
 	describe('#spawn', function () {
 		it('should spawn a child process', function (done) {
 			channel = cp.fork(process.cwd());
@@ -69,9 +73,8 @@ describe('WS Channel', function () {
 				should.equal(receivedData.key1, 'value1');
 				should.equal(receivedData.key2, 121);
 				should.equal(receivedData.key3, 40);
-				channel.kill('SIGKILL');
 				done();
-			}, 1500);
+			}, 500);
 		});
 	});
 });
