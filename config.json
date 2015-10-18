@@ -1,1 +1,20 @@
-{}
+{
+  "data_event": {
+	"type": "String",
+	"label": "Data Event",
+	"default": "data",
+	"help": "The event to emit when data is received from the connected devices. Default: data"
+  },
+  "message_event": {
+	"type": "String",
+	"label": "Message Event",
+	"default": "message",
+	"help": "The event to listen to for device messages or commands. Default: message"
+  },
+  "groupmessage_event": {
+	"type": "String",
+	"label": "Group Message Event",
+	"default": "groupmessage",
+	"help": "The event to listen to for group messages or commands. Default: groupmessage"
+  }
+}
