@@ -1,6 +1,8 @@
 'use strict';
 
-var io, platform = require('./platform');
+var platform = require('./platform'),
+	config = require('./config.json'),
+	io, dataEvent;
 
 /*
  * Listen to the data that is coming from the devices.
@@ -8,10 +10,15 @@ var io, platform = require('./platform');
  * or apps that are connected to this channel.
  */
 platform.on('data', function (data) {
-	io.emit('data', data);
+	io.emit(dataEvent, data);
 });
 
 platform.once('ready', function (options) {
+	var messageEvent = options.message_event || config.message_event.default;
+	var groupMessageEvent = options.groupmessage_event || config.groupmessage_event.default;
+
+	dataEvent = options.data_event || config.data_event.default;
+
 	io = require('socket.io')(options.port);
 
 	io.on('connection', function (socket) {
@@ -21,8 +28,8 @@ platform.once('ready', function (options) {
 		 * over to the platform. These messages may contain data/commands
 		 * that are to be sent to the connected devices on the network/topology.
 		 */
-		socket.on('message', function (data) {
-			platform.sendMessageToDevice(data.device, data.message);
+		socket.on(messageEvent, function (data) {
+			platform.sendMessageToDevice(data.target, data.message);
 		});
 
 		/*
@@ -31,8 +38,8 @@ platform.once('ready', function (options) {
 		 * over to the platform. These messages may contain data/commands
 		 * that are to be sent to the connected devices on the network/topology.
 		 */
-		socket.on('groupmessage', function (data) {
-			platform.sendMessageToGroup(data.group, data.message);
+		socket.on(groupMessageEvent, function (data) {
+			platform.sendMessageToGroup(data.target, data.message);
 		});
 	});
 

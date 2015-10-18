@@ -1,10 +1,11 @@
 'use strict';
 
+const PORT = 8080;
+
 var cp     = require('child_process'),
 	io     = require('socket.io-client'),
 	should = require('should'),
-	port   = 8080,
-	channel, receivedData;
+	channel;
 
 describe('WS Channel', function () {
 	this.slow(5000);
@@ -14,10 +15,8 @@ describe('WS Channel', function () {
 	});
 
 	describe('#spawn', function () {
-		it('should spawn a child process', function (done) {
-			channel = cp.fork(process.cwd());
-			should.ok(channel, 'Child process not spawned.');
-			done();
+		it('should spawn a child process', function () {
+			should.ok(channel = cp.fork(process.cwd()), 'Child process not spawned.');
 		});
 	});
 
@@ -34,7 +33,7 @@ describe('WS Channel', function () {
 				type: 'ready',
 				data: {
 					options: {
-						port: port
+						port: PORT
 					}
 				}
 			}, function (error) {
@@ -44,37 +43,32 @@ describe('WS Channel', function () {
 	});
 
 	describe('#data', function () {
-		it('should be able to serve a client', function (done) {
-			var url = 'http://' + require('ip').address() + ':' + port;
+		it('should be able to serve a client and exchange data', function (done) {
+			var url = 'http://' + require('ip').address() + ':' + PORT;
 			var sock = io(url);
 
 			sock.on('data', function (data) {
-				receivedData = data;
+				should.equal(data.key1, 'value1');
+				should.equal(data.key2, 121);
+				should.equal(data.key3, 40);
 
-				should.ok(data);
+				done();
 			});
 
-			done();
-		});
-
-		it('should be able to emit the data to the client', function (done) {
-			channel.send({
-				type: 'data',
-				data: {
-					key1: 'value1',
-					key2: 121,
-					key3: 40
-				}
-			}, done);
-		});
-
-		it('should have emitted the correct data to the client', function (done) {
 			setTimeout(function () {
-				should.equal(receivedData.key1, 'value1');
-				should.equal(receivedData.key2, 121);
-				should.equal(receivedData.key3, 40);
-				done();
-			}, 500);
+				channel.send({
+					type: 'data',
+					data: {
+						key1: 'value1',
+						key2: 121,
+						key3: 40
+					}
+				}, function (error) {
+					should.ifError(error);
+				});
+			}, 1000);
 		});
 	});
+
+	// TODO: Tests for messaging
 });
