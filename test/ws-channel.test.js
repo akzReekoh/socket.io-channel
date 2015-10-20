@@ -8,7 +8,7 @@ var cp     = require('child_process'),
 	channel;
 
 describe('WS Channel', function () {
-	this.slow(5000);
+	this.slow(8000);
 
 	after('terminate child process', function () {
 		channel.kill('SIGKILL');
@@ -22,7 +22,7 @@ describe('WS Channel', function () {
 
 	describe('#handShake', function () {
 		it('should notify the parent process when ready within 5 seconds', function (done) {
-			this.timeout(5000);
+			this.timeout(8000);
 
 			channel.on('message', function (message) {
 				if (message.type === 'ready')
@@ -44,7 +44,7 @@ describe('WS Channel', function () {
 
 	describe('#data', function () {
 		it('should be able to serve a client and exchange data', function (done) {
-			var url = 'http://' + require('ip').address() + ':' + PORT;
+			var url = 'http://127.0.0.1:' + PORT;
 			var sock = io(url);
 
 			sock.on('data', function (data) {
