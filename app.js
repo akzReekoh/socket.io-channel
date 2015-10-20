@@ -1,7 +1,7 @@
 'use strict';
 
 var platform = require('./platform'),
-	config = require('./config.json'),
+	config   = require('./config.json'),
 	io, dataEvent;
 
 /*
@@ -43,5 +43,6 @@ platform.once('ready', function (options) {
 		});
 	});
 
+	platform.log('Websockets Channel Initialized.');
 	platform.notifyReady();
 });
