@@ -5,18 +5,26 @@ const PORT = 8080;
 var cp     = require('child_process'),
 	io     = require('socket.io-client'),
 	should = require('should'),
-	channel;
+	wsChannel;
 
 describe('WS Channel', function () {
 	this.slow(8000);
 
 	after('terminate child process', function () {
-		channel.kill('SIGKILL');
+		this.timeout(5000);
+
+		wsChannel.send({
+			type: 'close'
+		});
+
+		setTimeout(function () {
+			wsChannel.kill('SIGKILL');
+		}, 4500);
 	});
 
 	describe('#spawn', function () {
 		it('should spawn a child process', function () {
-			should.ok(channel = cp.fork(process.cwd()), 'Child process not spawned.');
+			should.ok(wsChannel = cp.fork(process.cwd()), 'Child process not spawned.');
 		});
 	});
 
@@ -24,12 +32,12 @@ describe('WS Channel', function () {
 		it('should notify the parent process when ready within 5 seconds', function (done) {
 			this.timeout(8000);
 
-			channel.on('message', function (message) {
+			wsChannel.on('message', function (message) {
 				if (message.type === 'ready')
 					done();
 			});
 
-			channel.send({
+			wsChannel.send({
 				type: 'ready',
 				data: {
 					options: {
@@ -56,7 +64,7 @@ describe('WS Channel', function () {
 			});
 
 			setTimeout(function () {
-				channel.send({
+				wsChannel.send({
 					type: 'data',
 					data: {
 						key1: 'value1',
