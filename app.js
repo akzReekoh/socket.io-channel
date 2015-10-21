@@ -13,6 +13,14 @@ platform.on('data', function (data) {
 	io.emit(dataEvent, data);
 });
 
+/*
+ * Event to listen to in order to gracefully release all resources bound to this service.
+ */
+platform.on('close', function () {
+	io.close();
+	platform.notifyClose();
+});
+
 platform.once('ready', function (options) {
 	var messageEvent = options.message_event || config.message_event.default;
 	var groupMessageEvent = options.groupmessage_event || config.groupmessage_event.default;
