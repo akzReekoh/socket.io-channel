@@ -51,6 +51,6 @@ platform.once('ready', function (options) {
 		});
 	});
 
-	platform.log('Websockets Channel Initialized.');
+	platform.log('Websockets Channel initialized on port ' + options.port);
 	platform.notifyReady();
 });
