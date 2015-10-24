@@ -2,7 +2,7 @@
 
 var platform = require('./platform'),
 	config   = require('./config.json'),
-	io, dataEvent;
+	io, port, dataEvent;
 
 /*
  * Listen to the data that is coming from the devices.
@@ -17,7 +17,15 @@ platform.on('data', function (data) {
  * Event to listen to in order to gracefully release all resources bound to this service.
  */
 platform.on('close', function () {
-	io.close();
+	try {
+		io.close();
+		console.log('WS Channel closed on port ' + port);
+	}
+	catch (err) {
+		console.error('Error closing WS Channel on port ' + port, err);
+		platform.handleException(err);
+	}
+
 	platform.notifyClose();
 });
 
@@ -27,7 +35,8 @@ platform.once('ready', function (options) {
 
 	dataEvent = options.data_event || config.data_event.default;
 
-	io = require('socket.io')(options.port);
+	port = options.port;
+	io = require('socket.io')(port);
 
 	io.on('connection', function (socket) {
 		/*
