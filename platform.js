@@ -29,10 +29,25 @@ var isError = function (val) {
 function Platform() {
 	if (!(this instanceof Platform)) return new Platform();
 
+	EventEmitter.call(this);
+	Platform.init.call(this);
+}
+
+inherits(Platform, EventEmitter);
+
+/**
+ * Init function for Platform.
+ */
+Platform.init = function () {
 	var self = this;
 
 	process.on('SIGTERM', function () {
 		self.emit('close');
+
+		setTimeout(function () {
+			self.removeAllListeners();
+			process.exit();
+		}, 2000);
 	});
 
 	process.on('uncaughtException', function (error) {
@@ -45,18 +60,6 @@ function Platform() {
 			process.exit(1);
 		}, 2000);
 	});
-
-	EventEmitter.call(this);
-	Platform.init.call(this);
-}
-
-inherits(Platform, EventEmitter);
-
-/**
- * Init function for Platform.
- */
-Platform.init = function () {
-	var self = this;
 
 	process.on('message', function (m) {
 		if (m.type === 'ready')
