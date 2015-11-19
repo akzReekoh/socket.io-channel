@@ -7,7 +7,7 @@ var cp     = require('child_process'),
 	should = require('should'),
 	wsChannel;
 
-describe('WS Channel', function () {
+describe('Socket.io Channel', function () {
 	this.slow(8000);
 
 	after('terminate child process', function () {
