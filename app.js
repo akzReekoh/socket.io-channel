@@ -20,16 +20,18 @@ platform.on('close', function () {
 	var domain = require('domain');
 	var d = domain.create();
 
-	d.on('error', function (error) {
+	d.once('error', function (error) {
 		console.error('Error closing Socket.io Channel on port ' + port, error);
 		platform.handleException(error);
 		platform.notifyClose();
+		d.exit();
 	});
 
 	d.run(function () {
 		io.close();
 		console.log('Socket.io Channel closed on port ' + port);
 		platform.notifyClose();
+		d.exit();
 	});
 });
 
