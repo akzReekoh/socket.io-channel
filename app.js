@@ -21,14 +21,14 @@ platform.on('close', function () {
 	var d = domain.create();
 
 	d.on('error', function (error) {
-		console.error('Error closing WS Channel on port ' + port, error);
+		console.error('Error closing Socket.io Channel on port ' + port, error);
 		platform.handleException(error);
 		platform.notifyClose();
 	});
 
 	d.run(function () {
 		io.close();
-		console.log('WS Channel closed on port ' + port);
+		console.log('Socket.io Channel closed on port ' + port);
 		platform.notifyClose();
 	});
 });
@@ -64,6 +64,6 @@ platform.once('ready', function (options) {
 		});
 	});
 
-	platform.log('Websockets Channel initialized on port ' + options.port);
+	platform.log('Socket.io Channel initialized on port ' + port);
 	platform.notifyReady();
 });
