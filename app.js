@@ -2,6 +2,9 @@
 
 var platform = require('./platform'),
 	config   = require('./config.json'),
+	isArray = require('lodash.isarray'),
+	isPlainObject = require('lodash.isplainobject'),
+	async = require('async'),
 	io, port, dataEvent;
 
 /*
@@ -10,7 +13,16 @@ var platform = require('./platform'),
  * or apps that are connected to this channel.
  */
 platform.on('data', function (data) {
-	io.emit(dataEvent, data);
+	if(isPlainObject(data)){
+		io.emit(dataEvent, data);
+	}
+	else if(isArray(data)){
+		async.each(data, (datum) => {
+			io.emit(dataEvent, datum);
+		});
+	}
+	else
+		platform.handleException(new Error(`Invalid data received. Data must be a valid Array/JSON Object or a collection of objects. Data: ${data}`));
 });
 
 /*
